@@ -20,16 +20,29 @@ class Redis:
         self.redis.flushdb()
         self.set_currency()
 
+    @staticmethod
+    def get_currency_json():
+        return requests.get(f"https://api.currencyapi.com/v3/latest?apikey={Config.CURRENCY_API_TOKEN}").json()
+
     def set_currency(self):
-        currency_object = requests.get(f"https://api.currencyapi.com/v3/latest?apikey={Config.CURRENCY_API_TOKEN}").json()
+        currency_object = self.get_currency_json()
 
         self.redis.json().set("data", '$', currency_object["data"])
 
-    def get_currency(self, currency_from, currency_to):
+    def get_currency(self):
+        return self.redis.json().get("data")
+
+    def get_currency_to_convert(self, currency_from, currency_to):
         currency_from_value = self.redis.json().get("data", Path(f".{currency_from}"))
         currency_to_value = self.redis.json().get("data", Path(f".{currency_to}"))
 
         return currency_from_value, currency_to_value
 
-    def merge(self, num):
-        pass
+    def merge(self, merge_num=0):
+        currency_object = self.get_currency_json()
+
+        if merge_num == 0:
+            self.redis.json().set("data", '$', currency_object["data"])
+        else:
+            pass
+            self.redis.json()

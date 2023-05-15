@@ -14,12 +14,19 @@ class Handler:
         currency_to = request.rel_url.query.get("to", "USD")
         currency_amount = int(request.rel_url.query.get("amount", 10))
 
-        currency_from, currency_to = self.redis.get_currency(currency_from, currency_to)
+        currency_from, currency_to = self.redis.get_currency_to_convert(currency_from, currency_to)
 
         per = currency_amount / currency_from["value"]
         res = currency_to["value"] * per
 
-        return web.Response(text=f"{currency_from}, {currency_to}, {currency_amount}, {res}")
+        return web.json_response({"data": {
+            f"from {currency_from['code']}": currency_from,
+            f"to {currency_to['code']}": currency_to,
+            "result": {"value": round(res, 1), "percent": round(per, 1)}
+        }})
 
     async def database(self, request):
         merge = request.rel_url.query.get("merge")
+
+        self.redis.merge(merge)
+        return web.Response(text='succes')
