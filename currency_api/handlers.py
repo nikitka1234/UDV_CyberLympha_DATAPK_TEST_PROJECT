@@ -26,7 +26,6 @@ class Handler:
         }})
 
     async def database(self, request):
-        merge = request.rel_url.query.get("merge")
-
+        merge = int(request.rel_url.query.get("merge"))
         self.redis.merge(merge)
-        return web.Response(text='succes')
+        return web.json_response(self.redis.get_currency_json())

@@ -42,7 +42,8 @@ class Redis:
         currency_object = self.get_currency_json()
 
         if merge_num == 0:
-            self.redis.json().set("data", '$', currency_object["data"])
+            if self.redis.exists("data"):
+                self.redis.json().delete("data")
+                self.redis.json().set("data", '$', currency_object["data"])
         else:
             pass
-            self.redis.json()
