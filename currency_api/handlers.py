@@ -28,4 +28,4 @@ class Handler:
     async def database(self, request):
         merge = int(request.rel_url.query.get("merge"))
         self.redis.merge(merge)
-        return web.json_response(self.redis.get_currency_json())
+        return web.json_response(self.redis.get_currency())
