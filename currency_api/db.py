@@ -46,4 +46,6 @@ class Redis:
                 self.redis.json().delete("data")
                 self.redis.json().set("data", '$', currency_object["data"])
         else:
-            pass
+            data = self.get_currency()
+            data.update(self.get_currency_json()["data"])
+            self.redis.json().set("data", '$', data)
